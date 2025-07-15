@@ -1,8 +1,8 @@
 import os
 from tkinter import filedialog, messagebox
 
-from PIL._tkinter_finder import tk
-
+#from PIL._tkinter_finder import tk
+import tkinter as tk
 # clases del modelo
 from model.huffman import Huffman
 from model.shannon_fano import ShannonFano

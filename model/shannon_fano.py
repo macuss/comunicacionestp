@@ -49,7 +49,8 @@ class ShannonFano:
         simbolos_ordenados = sorted(frecuencias.items(), key=lambda item: item[1], reverse=True)
         return self._construir_codigos_recursivo(simbolos_ordenados)
 
-    def codificar_shannon_fano(self, texto, codigos):
+    @staticmethod
+    def codificar_shannon_fano(texto, codigos):
         """
         Codifica un texto usando la tabla de códigos Shannon-Fano.
         Args:
@@ -61,7 +62,8 @@ class ShannonFano:
         codificado = "".join(codigos.get(char, '') for char in texto)
         return codificado
 
-    def decodificar_shannon_fano(self, bits_codificados, codigos):
+    @staticmethod
+    def decodificar_shannon_fano(bits_codificados, codigos):
         """
         Decodifica una secuencia de bits usando la tabla de códigos Shannon-Fano.
         Args:
