@@ -1,14 +1,13 @@
 import os
+import tkinter as tk # Importar tkinter como tk para tk.END
 from tkinter import filedialog, messagebox
 
-#from PIL._tkinter_finder import tk
-import tkinter as tk
-# clases del modelo
+# Importar clases del modelo
 from model.huffman import Huffman
 from model.shannon_fano import ShannonFano
 from model.utils import Utils
 
-
+# Importar la vista principal
 from view.main_view import MainView
 
 class MainController:
@@ -20,130 +19,199 @@ class MainController:
         self.shannon_fano_model = shannon_fano_model
         self.utils_model = utils_model
 
-        self.original_text = ""
-        self.encoded_bits = ""
-        self.codes = {}
-        self.huffman_tree_root = None # Para almacenar el árbol de Huffman para decodificación y visualización
+        # --- Variables de estado del controlador ---
+        self._original_text = ""
+        self._last_algorithm_used = "N/A"
+        self._encoded_bits = ""
+        self._decoded_text = ""
+        self._codes = {}
+        self._frequencies = {}
+        self._huffman_tree_root = None # Para almacenar el árbol de Huffman
+        self._avg_len = None
+        self._compression_rate = None
+
+        # Métricas específicas para cada algoritmo (para la pantalla de gráficos)
+        self._huffman_metrics = {'avg_len': None, 'compression_rate': None}
+        self._shannon_fano_metrics = {'avg_len': None, 'compression_rate': None}
+
 
         # Asegurarse de que el directorio para imágenes temporales exista
         self.temp_dir = "temp_images"
         os.makedirs(self.temp_dir, exist_ok=True)
         self.huffman_tree_image_path = os.path.join(self.temp_dir, "huffman_tree.png")
 
-
     def iniciar_aplicacion(self):
+        """Inicia el bucle principal de la aplicación Tkinter."""
         self.view.master.mainloop()
 
-    def cargar_archivo(self):
-        file_path = filedialog.askopenfilename(
-            filetypes=[("Archivos de Texto", "*.txt"), ("Todos los Archivos", "*.*")]
-        )
-        if file_path:
-            try:
-                with open(file_path, 'r', encoding='utf-8') as f:
-                    content = f.read()
-                    self.view.text_input.delete("1.0", tk.END)
-                    self.view.text_input.insert("1.0", content)
-                    self.original_text = content
-                    self.view.show_message("Carga Exitosa", f"Archivo '{os.path.basename(file_path)}' cargado correctamente.")
-                    self.view.clear_all_outputs()
-            except Exception as e:
-                self.view.show_message("Error de Carga", f"No se pudo leer el archivo: {e}", type="error")
+    # --- Métodos para cambiar de pantalla ---
+    def show_main_menu(self):
+        self.view.show_screen("main_menu")
 
-    def comprimir_texto(self):
-        self.original_text = self.view.get_text_input()
-        if not self.original_text:
+    def show_huffman_screen(self):
+        self.view.show_screen("huffman")
+
+    def show_shannon_fano_screen(self):
+        self.view.show_screen("shannon_fano")
+
+    def show_results_screen(self):
+        self.view.show_screen("results")
+
+    def show_metrics_chart_screen(self):
+        self.view.show_screen("metrics_chart")
+
+    def on_screen_shown(self, screen_name):
+        """
+        Método llamado por MainView cuando una pantalla se hace visible.
+        Permite a la pantalla actualizar su contenido si es necesario.
+        """
+        screen_instance = self.view.get_screen(screen_name)
+        if hasattr(screen_instance, 'on_show'):
+            screen_instance.on_show()
+
+    # --- Getters y Setters para el estado global ---
+    def set_original_text(self, text):
+        self._original_text = text
+
+    def get_original_text(self):
+        return self._original_text
+
+    def get_last_algorithm_used(self):
+        return self._last_algorithm_used
+
+    def get_encoded_bits(self):
+        return self._encoded_bits
+
+    def get_decoded_text(self):
+        return self._decoded_text
+
+    def get_codes(self):
+        return self._codes
+
+    def get_frequencies(self):
+        return self._frequencies
+
+    def get_avg_len(self):
+        return self._avg_len
+
+    def get_compression_rate(self):
+        return self._compression_rate
+
+    def get_huffman_metrics(self):
+        return self._huffman_metrics
+
+    def get_shannon_fano_metrics(self):
+        return self._shannon_fano_metrics
+
+    # --- Lógica de Compresión/Descompresión ---
+    def compress_text(self, algorithm_name):
+        """
+        Gestiona la compresión del texto utilizando el algoritmo seleccionado.
+        Actualiza la vista con frecuencias, códigos, texto codificado y métricas.
+        """
+        current_screen = self.view.current_screen # Obtener la pantalla activa
+
+        if not self._original_text:
             self.view.show_message("Advertencia", "Por favor, introduce texto para comprimir.", type="warning")
             return
 
-        self.view.clear_all_outputs() # Limpiar resultados anteriores
+        self._frequencies = self.utils_model.calcular_frecuencias(self._original_text)
+        if not self._frequencies:
+            self.view.show_message("Advertencia", "No hay caracteres válidos para comprimir (texto vacío o solo espacios).", type="warning")
+            return
 
-        selected_algo = self.view.get_selected_algorithm()
-        frecuencias = self.utils_model.calcular_frecuencias(self.original_text)
-        self.view.display_frequencies(frecuencias)
+        self._last_algorithm_used = algorithm_name
+        self._encoded_bits = ""
+        self._codes = {}
+        self._huffman_tree_root = None
+        self._avg_len = None
+        self._compression_rate = None
 
-        if selected_algo == "Huffman":
-            if not frecuencias: # Si el texto está vacío después de limpiar espacios
-                self.view.show_message("Advertencia", "No hay caracteres válidos para comprimir (texto vacío o solo espacios).", type="warning")
-                return
-
-            self.huffman_tree_root = self.huffman_model.construir_arbol_huffman(frecuencias)
-            if not self.huffman_tree_root:
+        if algorithm_name == "Huffman":
+            self._huffman_tree_root = self.huffman_model.construir_arbol_huffman(self._frequencies)
+            if not self._huffman_tree_root:
                 self.view.show_message("Error", "No se pudo construir el árbol de Huffman. ¿Texto vacío?", type="error")
                 return
 
-            self.codes = self.huffman_model.generar_codigos_huffman(self.huffman_tree_root)
-            self.encoded_bits = self.huffman_model.codificar_huffman(self.original_text, self.codes)
+            self._codes = self.huffman_model.generar_codigos_huffman(self._huffman_tree_root)
+            self._encoded_bits = self.huffman_model.codificar_huffman(self._original_text, self._codes)
 
+            # Generar y mostrar el árbol de Huffman en la pantalla de Huffman
+            generated_image_path = self.huffman_model.generar_arbol_graphviz(self._huffman_tree_root, self.huffman_tree_image_path)
+            if current_screen and hasattr(current_screen, 'display_huffman_tree'):
+                current_screen.display_huffman_tree(generated_image_path)
 
+        elif algorithm_name == "Shannon-Fano":
+            self._codes = self.shannon_fano_model.generar_codigos_shannon_fano(self._frequencies)
+            self._encoded_bits = self.shannon_fano_model.codificar_shannon_fano(self._original_text, self._codes)
+            # Shannon-Fano no tiene árbol visual, así que se limpia si se estaba mostrando uno
+            if current_screen and hasattr(current_screen, 'clear_huffman_tree_display'):
+                current_screen.clear_huffman_tree_display()
 
+        # Actualizar la pantalla actual con los resultados
+        if current_screen:
+            if hasattr(current_screen, 'display_frequencies'):
+                current_screen.display_frequencies(self._frequencies)
+            if hasattr(current_screen, 'display_codes'):
+                current_screen.display_codes(self._codes)
+            if hasattr(current_screen, 'display_encoded_text'):
+                current_screen.display_encoded_text(self._encoded_bits)
 
+        # Calcular y almacenar métricas
+        if self._codes: # Asegurarse de que se hayan generado códigos
+            self._avg_len = self.utils_model.calcular_longitud_promedio(self._frequencies, self._codes)
+            self._compression_rate = self.utils_model.calcular_tasa_compresion(self._original_text, self._encoded_bits)
+        else:
+            self._avg_len = 0.0
+            self._compression_rate = 0.0
 
+        # Almacenar métricas específicas del algoritmo para gráficos
+        if algorithm_name == "Huffman":
+            self._huffman_metrics['avg_len'] = self._avg_len
+            self._huffman_metrics['compression_rate'] = self._compression_rate
+        elif algorithm_name == "Shannon-Fano":
+            self._shannon_fano_metrics['avg_len'] = self._avg_len
+            self._shannon_fano_metrics['compression_rate'] = self._compression_rate
 
-            # árbol Huffman ---------------------------------
-            generated_image_path = self.huffman_model.generar_arbol_graphviz(self.huffman_tree_root, self.huffman_tree_image_path)
-            self.view.display_huffman_tree(generated_image_path)
+        self.view.show_message("Compresión Exitosa", f"Texto comprimido con {algorithm_name}.")
+        self._decoded_text = "" # Limpiar texto decodificado al comprimir
 
-        elif selected_algo == "Shannon-Fano":
-            if not frecuencias:
-                self.view.show_message("Advertencia", "No hay caracteres válidos para comprimir (texto vacío o solo espacios).", type="warning")
-                return
-
-            self.codes = self.shannon_fano_model.generar_codigos_shannon_fano(frecuencias)
-            self.encoded_bits = self.shannon_fano_model.codificar_shannon_fano(self.original_text, self.codes)
-            self.view.clear_huffman_tree_display() # Limpiar si era Huffman antes
-
-        self.view.display_codes(self.codes)
-        self.view.display_encoded_text(self.encoded_bits)
-
-
-
-
-
-
-
-        # Calcular y mostrar métricas ----------------------------------------------------------------------
-        avg_len = self.utils_model.calcular_longitud_promedio(frecuencias, self.codes)
-        comp_rate = self.utils_model.calcular_tasa_compresion(self.original_text, self.encoded_bits)
-        self.view.display_metrics(avg_len, comp_rate)
-        self.view.show_message("Compresión Exitosa", f"Texto comprimido con {selected_algo}.")
-
-    def descomprimir_texto(self):
-        if not self.encoded_bits or not self.codes:
+    def decompress_text(self, algorithm_name):
+        """
+        Gestiona la descompresión del texto codificado.
+        """
+        if not self._encoded_bits or not self._codes:
             self.view.show_message("Advertencia", "Primero comprime un texto para poder decodificarlo.", type="warning")
             return
 
-        selected_algo = self.view.get_selected_algorithm()
-        decoded_text = ""
+        self._decoded_text = ""
+        current_screen = self.view.current_screen
 
         try:
-            if selected_algo == "Huffman":
-                if not self.huffman_tree_root:
+            if algorithm_name == "Huffman":
+                if not self._huffman_tree_root:
                     self.view.show_message("Error", "No hay un árbol de Huffman para decodificar. Comprime primero.", type="error")
                     return
-                decoded_text = self.huffman_model.decodificar_huffman(self.encoded_bits, self.huffman_tree_root)
-            elif selected_algo == "Shannon-Fano":
-                decoded_text = self.shannon_fano_model.decodificar_shannon_fano(self.encoded_bits, self.codes)
+                self._decoded_text = self.huffman_model.decodificar_huffman(self._encoded_bits, self._huffman_tree_root)
+            elif algorithm_name == "Shannon-Fano":
+                self._decoded_text = self.shannon_fano_model.decodificar_shannon_fano(self._encoded_bits, self._codes)
 
-            self.view.display_decoded_text(decoded_text)
-            if decoded_text == self.original_text:
+            if current_screen and hasattr(current_screen, 'display_decoded_text'):
+                current_screen.display_decoded_text(self._decoded_text)
+
+            if self._decoded_text == self._original_text:
                 self.view.show_message("Descompresión Exitosa", "El texto ha sido decodificado correctamente.")
             else:
-                self.view.show_message("Descompresión Completa", "Texto decodificado, pero difiere del original. (Revisar si hay caracteres no soportados, ej. emojis)", type="warning")
+                self.view.show_message("Descompresión Completa", "Texto decodificado, pero difiere del original. (Revisar si hay caracteres no soportados, ej. emojis o errores de codificación)", type="warning")
 
         except Exception as e:
             self.view.show_message("Error de Descompresión", f"Ocurrió un error al decodificar: {e}", type="error")
 
-
-
-
-
-
-
-
-
-    def guardar_resultados(self):
-        if not self.original_text:
+    def save_results(self):
+        """
+        Guarda el texto original, codificado y la tabla de códigos en un archivo.
+        """
+        if not self._original_text or not self._encoded_bits or not self._codes:
             self.view.show_message("Advertencia", "No hay resultados para guardar. Comprime un texto primero.", type="warning")
             return
 
@@ -155,17 +223,17 @@ class MainController:
             try:
                 with open(file_path, 'w', encoding='utf-8') as f:
                     f.write(f"--- Texto Original ---\n")
-                    f.write(self.original_text + "\n\n")
-                    f.write(f"--- Algoritmo Utilizado: {self.view.get_selected_algorithm()} ---\n\n")
+                    f.write(self._original_text + "\n\n")
+                    f.write(f"--- Algoritmo Utilizado: {self._last_algorithm_used} ---\n\n")
                     f.write(f"--- Texto Codificado (Bits) ---\n")
-                    f.write(self.encoded_bits + "\n\n")
+                    f.write(self._encoded_bits + "\n\n")
                     f.write(f"--- Tabla de Códigos ---\n")
-                    for char, code in self.codes.items():
+                    for char, code in self._codes.items():
                         f.write(f"'{char}': {code}\n")
                     f.write("\n")
                     f.write(f"--- Métricas ---\n")
-                    f.write(f"{self.view.avg_len_label.cget('text')}\n")
-                    f.write(f"{self.view.compression_rate_label.cget('text')}\n")
+                    f.write(f"Longitud Promedio: {self._avg_len:.2f} bits/símbolo\n")
+                    f.write(f"Tasa de Compresión: {self._compression_rate:.2f}%\n")
 
                 self.view.show_message("Guardado Exitoso", f"Resultados guardados en '{os.path.basename(file_path)}'.")
             except Exception as e:
