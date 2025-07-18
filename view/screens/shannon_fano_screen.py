@@ -8,7 +8,7 @@ class ShannonFanoScreen(tk.Frame):
         self.view = view
         self.controller = None
 
-        self.configure(bg="#E8F5E9") # Fondo verde claro
+        self.configure(bg="#E8F5E9")
 
         # --- Frames Principales ---
         self.input_frame = ttk.LabelFrame(self, text="Entrada de Texto y Controles", padding=10)
@@ -30,10 +30,10 @@ class ShannonFanoScreen(tk.Frame):
 
         s = ttk.Style()
         s.configure('Back.TButton', font=('Inter', 10, 'bold'),
-                    background='#6c757d', foreground='white',  # colores de fondo y texto
+                    background='#6c757d', foreground='white',
                     relief='raised', borderwidth=0, borderradius=5)
         s.map('Back.TButton',
-              background=[('active', '#545b62')],  # color al pasar mouse
+              background=[('active', '#545b62')],
               foreground=[('active', 'white')])
 
 
@@ -48,22 +48,28 @@ class ShannonFanoScreen(tk.Frame):
 
 
 
+
         # --- Resultados ---------------------------------------------------------------------------------------
+
 
         ttk.Label(self.results_frame, text="Frecuencias de Símbolos:").pack(anchor="w", pady=2)
         self.freq_text = tk.Text(self.results_frame, wrap="word", height=6, font=('Consolas', 9))
         self.freq_text.pack(fill="x", pady=2)
         self.freq_text.config(state="disabled")
 
+
         ttk.Label(self.results_frame, text="Tabla de Códigos Shannon-Fano:").pack(anchor="w", pady=2)
         self.codes_text = tk.Text(self.results_frame, wrap="word", height=8, font=('Consolas', 9))
         self.codes_text.pack(fill="x", pady=2)
         self.codes_text.config(state="disabled")
 
+
         ttk.Label(self.results_frame, text="Texto Codificado (Bits):").pack(anchor="w", pady=2)
         self.encoded_text = tk.Text(self.results_frame, wrap="word", height=6, font=('Consolas', 9))
         self.encoded_text.pack(fill="x", pady=2)
         self.encoded_text.config(state="disabled")
+
+
 
         ttk.Label(self.results_frame, text="Texto Decodificado:").pack(anchor="w", pady=2)
         self.decoded_text = tk.Text(self.results_frame, wrap="word", height=6, font=('Consolas', 9))

@@ -119,6 +119,13 @@ class ResultsScreen(tk.Frame):
         self.avg_len_label.config(text="Longitud Promedio: N/A")
         self.compression_rate_label.config(text="Tasa de Compresión: N/A")
 
+
+
+
+
+
+
+
     def on_show(self):
 
         if self.controller:

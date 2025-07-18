@@ -42,12 +42,12 @@ class Huffman:
         if arbol is None:
             return
 
-        # Si es un nodo hoja (tiene un carácter), es un código completo
+        # Si es un nodo hoja (tiene un carácter..), es un código completo
         if arbol.char is not None:
             codigos[arbol.char] = codigo_actual if codigo_actual else '0'  # Caso de un solo caracter
             return
 
-        # Recorrer hacia la izquierda (0) y la derecha (1)
+        # recorre hacia la izquierda (0) y la derecha (1)
         self.generar_codigos_huffman(arbol.left, codigo_actual + "0", codigos)
         self.generar_codigos_huffman(arbol.right, codigo_actual + "1", codigos)
         return codigos
@@ -62,28 +62,23 @@ class Huffman:
         for bit in bits_codificados:
             if bit == '0':
                 nodo_actual = nodo_actual.left
-            else:  # bit == '1'
+            else:
                 nodo_actual = nodo_actual.right
 
             if nodo_actual.char is not None:  # Si llegamos a un nodo hoja
                 decodificado.append(nodo_actual.char)
-                nodo_actual = arbol  # Resetear al inicio del árbol para el siguiente carácter
+                nodo_actual = arbol  # resetear al inicio del árbol para el siguiente carácter
         return "".join(decodificado)
 
     def generar_arbol_graphviz(self, arbol, output_path="temp_huffman_tree.png"):
-        """
-        Genera una visualización del árbol de Huffman usando Graphviz.
-        Args:
-            arbol (HuffmanNode): La raíz del árbol de Huffman.
-            output_path (str): Ruta donde se guardará la imagen del árbol.
-        Returns:
-            str: La ruta del archivo de imagen generado, o None si falla.
-        """
+
         if not arbol:
             return None
 
         graph = pydot.Dot("huffman_tree", graph_type="digraph")
-        nodes_created = {}  # Para evitar duplicados
+        nodes_created = {}
+
+
 
         def add_nodes_edges(node):
             if node is None:
@@ -118,8 +113,9 @@ class Huffman:
 
         add_nodes_edges(arbol)
 
+
         try:
-            # que el directorio de salida exista, ver si funciona
+
             output_dir = os.path.dirname(output_path)
             if output_dir and not os.path.exists(output_dir):
                 os.makedirs(output_dir)

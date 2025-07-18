@@ -9,11 +9,14 @@ class Utils:
         total_caracteres = sum(frecuencias.values())
         return total_bits / total_caracteres if total_caracteres > 0 else 0
 
+
     def calcular_tasa_compresion(self, texto_original, texto_codificado_bits):
         if not texto_original:
             return 0.0
 
-        # Tamaño en bits del texto original (considerando 8 bits por carácter ASCII/UTF-8 simple)
+
+
+        # Tamaño en bits del texto original (8 bits por carácter ASCII/UTF-8 simple)
         tamano_original_bits = len(texto_original) * 8
         tamano_codificado_bits = len(texto_codificado_bits)
 

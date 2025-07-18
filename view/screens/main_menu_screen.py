@@ -7,9 +7,9 @@ class MainMenuScreen(tk.Frame):
         self.view = view
         self.controller = None
 
-        self.configure(bg="#F8F8F8") # Un color de fondo claro
+        self.configure(bg="#007CB9")
 
-        # Estilo para los botones grandes
+
         s = ttk.Style()
         s.configure('MainMenu.TButton', font=('Inter', 16, 'bold'), padding=20,
                     background='#4CAF50', foreground='white', relief='raised', borderwidth=0, borderradius=10)
@@ -17,18 +17,22 @@ class MainMenuScreen(tk.Frame):
               background=[('active', '#45a049')],
               foreground=[('active', 'white')])
 
-        # Contenedor para los botones
+        # contenedor para los botones
         buttons_frame = ttk.Frame(self, padding="30 30 30 30")
         buttons_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER) # Centrar el frame de botones
 
-        # Título
+        # título
         ttk.Label(buttons_frame, text="Selecciona una opción:", font=('Inter', 20, 'bold'), foreground='#333333').pack(pady=20)
 
-        # Botones grandes
+        # botones grandes
         ttk.Button(buttons_frame, text="Shannon-Fano", command=self._go_to_shannon_fano, style='MainMenu.TButton').pack(fill="x", pady=10, ipadx=50, ipady=10)
         ttk.Button(buttons_frame, text="Huffman", command=self._go_to_huffman, style='MainMenu.TButton').pack(fill="x", pady=10, ipadx=50, ipady=10)
         ttk.Button(buttons_frame, text="Resultados", command=self._go_to_results, style='MainMenu.TButton').pack(fill="x", pady=10, ipadx=50, ipady=10)
         ttk.Button(buttons_frame, text="Gráficos", command=self._go_to_metrics_chart, style='MainMenu.TButton').pack(fill="x", pady=10, ipadx=50, ipady=10)
+
+
+
+
 
     def set_controller(self, controller):
         self.controller = controller

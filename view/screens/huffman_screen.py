@@ -10,7 +10,7 @@ class HuffmanScreen(tk.Frame):
         self.view = view
         self.controller = None
 
-        self.configure(bg="#E0F7FA")  # Fondo azul claro
+        self.configure(bg="#E0F7FA")
 
 
 
@@ -57,13 +57,13 @@ class HuffmanScreen(tk.Frame):
 
 
 
-        # --- Resultados (PanedWindow para organizar) ---
+        # resultados (PanedWindow para organizar) ---
         self.paned_window = ttk.PanedWindow(self.results_frame, orient=tk.HORIZONTAL)
         self.paned_window.pack(fill="both", expand=True, padx=5, pady=5)
 
 
 
-        # Panel Izquierdo: Frecuencias, Códigos, Bits, Decodificado ---------------------
+        # Panel Izquierdo: frecuencias, códigos, bits, decodificado ---------------------
         self.left_panel = ttk.Frame(self.paned_window, padding=5)
         self.paned_window.add(self.left_panel, weight=1)
 
@@ -129,7 +129,7 @@ class HuffmanScreen(tk.Frame):
     def _compress(self):
         if self.controller:
             text = self.text_input.get("1.0", tk.END).strip()
-            self.controller.set_original_text(text)  # Asegurar que el controlador tenga el texto más reciente
+            self.controller.set_original_text(text)
             self.controller.compress_text("Huffman")
 
     def _decompress(self):
@@ -183,7 +183,7 @@ class HuffmanScreen(tk.Frame):
                 canvas_height = self.tree_canvas.winfo_height()
 
 
-                if canvas_width == 0: canvas_width = 400  # Default para primera carga
+                if canvas_width == 0: canvas_width = 400
                 if canvas_height == 0: canvas_height = 400
 
                 img_width, img_height = img.size

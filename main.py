@@ -7,7 +7,7 @@ from controller.main_controller import MainController
 import os
 
 if __name__ == "__main__":
-    # Crear la carpeta temporal si no existe
+
     temp_image_dir = "temp_images"
     os.makedirs(temp_image_dir, exist_ok=True)
 

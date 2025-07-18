@@ -9,21 +9,21 @@ class MetricsChartScreen(tk.Frame):
         self.view = view
         self.controller = None
 
-        self.configure(bg="#F3E5F5") # Fondo púrpura claro
+        self.configure(bg="#F3E5F5")
 
-        # --- Controles ---
+        # controles
         control_frame = ttk.Frame(self, padding=10)
         control_frame.pack(side="top", fill="x", padx=10, pady=5)
         ttk.Button(control_frame, text="Generar Gráficos", command=self._generate_charts).pack(side="left", padx=10)
         ttk.Button(control_frame, text="Volver al Menú", command=self._go_back).pack(side="right", padx=10)
 
-        # --- Área de Gráficos ---
+        # Gráficos
         self.chart_frame = ttk.Frame(self, borderwidth=2, relief="groove")
         self.chart_frame.pack(fill="both", expand=True, padx=10, pady=5)
 
         self.figure = plt.Figure(figsize=(10, 6), dpi=100)
-        self.ax1 = self.figure.add_subplot(121) # Subplot para Longitud Promedio
-        self.ax2 = self.figure.add_subplot(122) # Subplot para Tasa de Compresión
+        self.ax1 = self.figure.add_subplot(121) # Longitud Promedio
+        self.ax2 = self.figure.add_subplot(122) # Tasa de Compresión
 
         self.canvas = FigureCanvasTkAgg(self.figure, master=self.chart_frame)
         self.canvas_widget = self.canvas.get_tk_widget()
@@ -42,6 +42,8 @@ class MetricsChartScreen(tk.Frame):
                 return
 
             self.plot_metrics(huffman_metrics, shannon_fano_metrics)
+
+
 
     def _go_back(self):
         if self.controller:
@@ -84,16 +86,18 @@ class MetricsChartScreen(tk.Frame):
         self.ax2.set_ylabel('Porcentaje (%)')
         for i, v in enumerate(comp_rates):
             self.ax2.text(i, v + 0.5, f"{v:.2f}%", ha='center', va='bottom')
-        self.ax2.set_ylim(0, 100) # La tasa de compresión va de 0 a 100%
+        self.ax2.set_ylim(0, 100)
 
-        self.figure.tight_layout() # Ajustar el diseño para evitar superposiciones
+        self.figure.tight_layout()
         self.figure.canvas.draw()
 
+
+
+
     def on_show(self):
-        """Metodo llamado cuando la pantalla se hace visible."""
-        # Limpiar gráficos al mostrar la pantalla
+
         self.ax1.clear()
         self.ax2.clear()
         self.figure.canvas.draw()
-        # Opcionalmente, puedes generar los gráficos automáticamente al mostrar la pantalla
+
         # self._generate_charts()

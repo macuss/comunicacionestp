@@ -7,7 +7,7 @@ class WelcomeScreen(tk.Frame):
         self.view = view
         self.controller = None
 
-        self.configure(bg="#F0F0F0") # Un color de fondo suave
+        self.configure(bg="#F0F0F0")
 
         # Contenedor central para el contenido
         center_frame = ttk.Frame(self, padding="50 50 50 50", style='Welcome.TFrame')
