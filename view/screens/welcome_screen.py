@@ -25,6 +25,7 @@ class WelcomeScreen(tk.Frame):
 
         s.configure('Welcome.TFrame',
                     background=self.background_color,
+                    font=('Segoe UI', 38, 'bold'),
                     relief='flat',
                     borderwidth=0
                    )
@@ -38,7 +39,7 @@ class WelcomeScreen(tk.Frame):
                    )
 
         s.configure('WelcomeDescription.TLabel',
-                    font=('Segoe UI', 18),
+                    font=('Segoe UI', 30),
                     foreground=self.text_color_dark,
                     background=self.background_color
                    )

@@ -47,7 +47,7 @@ class HuffmanScreen(tk.Frame):
         s.configure('Modern.TText',
                     background='#ffffff',
                     foreground=self.text_color_dark,
-                    font=('Consolas', 10),
+                    font=('Consolas', 14),
                     relief='flat',
                     borderwidth=1,
                     bordercolor='#cccccc'
@@ -86,7 +86,7 @@ class HuffmanScreen(tk.Frame):
              )
 
         s.configure('Result.TLabel',
-                    font=('Segoe UI', 11, 'bold'),
+                    font=('Segoe UI', 14, 'bold'),
                     foreground=self.text_color_dark,
                     background=self.background_color
                    )
@@ -102,7 +102,7 @@ class HuffmanScreen(tk.Frame):
         self.results_frame.pack(side="top", fill="both", expand=True, padx=20, pady=10)
 
         # entrada de texto --------------------------------------------------
-        self.text_input = tk.Text(self.input_frame, wrap="word", height=8, width=80, font=('Consolas', 10),
+        self.text_input = tk.Text(self.input_frame, wrap="word", height=8, width=80, font=('Consolas', 14),
                                   background='#ffffff', foreground=self.text_color_dark,
                                   relief='flat', borderwidth=1, highlightbackground='#cccccc', highlightcolor='#cccccc')
         self.text_input.pack(side="left", fill="both", expand=True, padx=10, pady=10)
@@ -133,28 +133,28 @@ class HuffmanScreen(tk.Frame):
         self.paned_window.add(self.left_panel, weight=1)
 
         ttk.Label(self.left_panel, text="Frecuencias de Símbolos:", style='Result.TLabel').pack(anchor="w", pady=(5, 2))
-        self.freq_text = tk.Text(self.left_panel, wrap="word", height=6, font=('Consolas', 9),
+        self.freq_text = tk.Text(self.left_panel, wrap="word", height=6, font=('Consolas', 12),
                                  background='#ffffff', foreground=self.text_color_dark,
                                  relief='flat', borderwidth=1, highlightbackground='#cccccc', highlightcolor='#cccccc')
         self.freq_text.pack(fill="x", pady=2, padx=5)
         self.freq_text.config(state="disabled")
 
         ttk.Label(self.left_panel, text="Tabla de Códigos Huffman:", style='Result.TLabel').pack(anchor="w", pady=(5, 2))
-        self.codes_text = tk.Text(self.left_panel, wrap="word", height=8, font=('Consolas', 9),
+        self.codes_text = tk.Text(self.left_panel, wrap="word", height=8, font=('Consolas', 12),
                                   background='#ffffff', foreground=self.text_color_dark,
                                   relief='flat', borderwidth=1, highlightbackground='#cccccc', highlightcolor='#cccccc')
         self.codes_text.pack(fill="x", pady=2, padx=5)
         self.codes_text.config(state="disabled")
 
         ttk.Label(self.left_panel, text="Texto Codificado (Bits):", style='Result.TLabel').pack(anchor="w", pady=(5, 2))
-        self.encoded_text = tk.Text(self.left_panel, wrap="word", height=6, font=('Consolas', 9),
+        self.encoded_text = tk.Text(self.left_panel, wrap="word", height=6, font=('Consolas', 12),
                                    background='#ffffff', foreground=self.text_color_dark,
                                    relief='flat', borderwidth=1, highlightbackground='#cccccc', highlightcolor='#cccccc')
         self.encoded_text.pack(fill="x", pady=2, padx=5)
         self.encoded_text.config(state="disabled")
 
         ttk.Label(self.left_panel, text="Texto Decodificado:", style='Result.TLabel').pack(anchor="w", pady=(5, 2))
-        self.decoded_text = tk.Text(self.left_panel, wrap="word", height=6, font=('Consolas', 9),
+        self.decoded_text = tk.Text(self.left_panel, wrap="word", height=6, font=('Consolas', 12),
                                    background='#ffffff', foreground=self.text_color_dark,
                                    relief='flat', borderwidth=1, highlightbackground='#cccccc', highlightcolor='#cccccc')
         self.decoded_text.pack(fill="x", pady=2, padx=5)

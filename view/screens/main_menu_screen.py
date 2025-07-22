@@ -30,7 +30,7 @@ class MainMenuScreen(tk.Frame):
 
 
         s.configure('Modern.TButton',
-                    font=('Segoe UI', 16, 'bold'),
+                    font=('Segoe UI', 25, 'bold'),
                     padding=15,
                     background=self.primary_color,
                     foreground=self.text_color_light,
@@ -48,7 +48,7 @@ class MainMenuScreen(tk.Frame):
 
 
         s.configure('Title.TLabel',
-                    font=('Segoe UI', 24, 'bold'),
+                    font=('Segoe UI', 25, 'bold'),
                     foreground=self.text_color_dark,
                     background=self.background_color
                    )
