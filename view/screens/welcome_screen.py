@@ -7,42 +7,68 @@ class WelcomeScreen(tk.Frame):
         self.view = view
         self.controller = None
 
-        self.configure(bg="#F0F0F0")
+        self.primary_color = "#6c5ce7"
+        self.secondary_color = "#a29bfe"
+        self.accent_color = "#00b894"
+        self.background_color = "#f5f6fa"
+        self.text_color_dark = "#2d3436"
+        self.text_color_light = "#ffffff"
 
-        # Contenedor central para el contenido
-        center_frame = ttk.Frame(self, padding="50 50 50 50", style='Welcome.TFrame')
-        center_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER) # Centra frame
-
-        # Estilo frame central
-        #self.master.master.master.tk.call("source", "azure.tcl") # Cargar tema Azure si no está cargado
-
-
+        self.configure(bg=self.background_color)
 
         s = ttk.Style()
-        s.configure('Welcome.TFrame', background='#FFFFFF', relief='raised', borderwidth=2, borderradius=15)
-        s.configure('Welcome.TLabel', font=('Inter', 24, 'bold'), foreground='#333333')
-        s.configure('Welcome.TButton', font=('Inter', 14, 'bold'), padding=15, background='#007BFF', foreground='white', relief='raised', borderwidth=0, borderradius=10)
+        try:
+            s.theme_use('clam')
+        except tk.TclError:
+            print("El tema 'clam' no está disponible. Usando el tema predeterminado.")
+            s.theme_use('default')
+
+        s.configure('Welcome.TFrame',
+                    background=self.background_color,
+                    relief='flat',
+                    borderwidth=0
+                   )
+        center_frame = ttk.Frame(self, padding="60 60 60 60", style='Welcome.TFrame')
+        center_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+
+        s.configure('WelcomeTitle.TLabel',
+                    font=('Segoe UI', 38, 'bold'),
+                    foreground=self.text_color_dark,
+                    background=self.background_color
+                   )
+
+        s.configure('WelcomeDescription.TLabel',
+                    font=('Segoe UI', 18),
+                    foreground=self.text_color_dark,
+                    background=self.background_color
+                   )
+
+        s.configure('Welcome.TButton',
+                    font=('Segoe UI', 20, 'bold'),
+                    padding=18,
+                    background=self.primary_color,
+                    foreground=self.text_color_light,
+                    relief='flat',
+                    borderwidth=0,
+                    focusthickness=0,
+                    focuscolor=self.primary_color
+                   )
         s.map('Welcome.TButton',
-              background=[('active', '#0056b3')],
-              foreground=[('active', 'white')])
+              background=[('active', self.secondary_color)],
+              foreground=[('active', self.text_color_dark)],
+              relief=[('pressed', 'flat')]
+             )
 
-        # Título
-        ttk.Label(center_frame, text="¡Bienvenido al Compresor de Texto!", style='Welcome.TLabel').pack(pady=20)
+        ttk.Label(center_frame, text="Comunicaciones 2025", style='WelcomeTitle.TLabel').pack(pady=(20, 5))
 
-        # Descripción,,
-        ttk.Label(center_frame, text="Explora los algoritmos de compresión Huffman y Shannon-Fano.",
-                  font=('Inter', 12), foreground='#555555').pack(pady=10)
+        ttk.Label(center_frame, text="TP Integrador: Algoritmos de Compresión", style='WelcomeDescription.TLabel').pack(pady=(5, 10))
 
-        # Botón para iniciar
-        ttk.Button(center_frame, text="Comenzar", command=self._go_to_main_menu, style='Welcome.TButton').pack(pady=30)
+        ttk.Label(center_frame, text="Implementación de Huffman y Shannon-Fano.", style='WelcomeDescription.TLabel').pack(pady=(5, 30))
 
-
+        ttk.Button(center_frame, text="Comenzar", command=self._go_to_main_menu, style='Welcome.TButton').pack(pady=20)
 
     def set_controller(self, controller):
         self.controller = controller
-
-
-
 
     def _go_to_main_menu(self):
         if self.controller:

@@ -30,15 +30,7 @@ class Huffman:
         return priority_queue[0] if priority_queue else None
 
     def generar_codigos_huffman(self, arbol, codigo_actual="", codigos={}):
-        """
-        Genera la tabla de códigos Huffman recursivamente.
-        Args:
-            arbol (HuffmanNode): El nodo actual del árbol.
-            codigo_actual (str): El código binario construido hasta el momento.
-            codigos (dict): Diccionario para almacenar los códigos generados.
-        Returns:
-            dict: La tabla de códigos Huffman.
-        """
+
         if arbol is None:
             return
 
@@ -100,6 +92,7 @@ class Huffman:
                     nodes_created[left_id] = graph_node
                 graph.add_edge(pydot.Edge(nodes_created[node_id], nodes_created[left_id], label="0"))
                 add_nodes_edges(node.left)
+
 
             if node.right:
                 right_id = str(id(node.right))

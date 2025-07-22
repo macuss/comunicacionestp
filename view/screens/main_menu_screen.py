@@ -7,29 +7,64 @@ class MainMenuScreen(tk.Frame):
         self.view = view
         self.controller = None
 
-        self.configure(bg="#007CB9")
 
+        self.primary_color = "#6c5ce7"
+        self.secondary_color = "#a29bfe"
+        self.accent_color = "#00b894"
+        self.background_color = "#f5f6fa"
+        self.text_color_dark = "#2d3436"
+        self.text_color_light = "#ffffff"
+
+        self.configure(bg=self.background_color)
 
         s = ttk.Style()
-        s.configure('MainMenu.TButton', font=('Inter', 16, 'bold'), padding=20,
-                    background='#4CAF50', foreground='white', relief='raised', borderwidth=0, borderradius=10)
-        s.map('MainMenu.TButton',
-              background=[('active', '#45a049')],
-              foreground=[('active', 'white')])
 
-        # contenedor para los botones
-        buttons_frame = ttk.Frame(self, padding="30 30 30 30")
-        buttons_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER) # Centrar el frame de botones
+        try:
+            s.theme_use('clam')
+        except tk.TclError:
+            print("El tema 'clam' no está disponible. Usando el tema predeterminado.")
+            s.theme_use('default')
 
-        # título
-        ttk.Label(buttons_frame, text="Selecciona una opción:", font=('Inter', 20, 'bold'), foreground='#333333').pack(pady=20)
 
-        # botones grandes
-        ttk.Button(buttons_frame, text="Shannon-Fano", command=self._go_to_shannon_fano, style='MainMenu.TButton').pack(fill="x", pady=10, ipadx=50, ipady=10)
-        ttk.Button(buttons_frame, text="Huffman", command=self._go_to_huffman, style='MainMenu.TButton').pack(fill="x", pady=10, ipadx=50, ipady=10)
-        ttk.Button(buttons_frame, text="Resultados", command=self._go_to_results, style='MainMenu.TButton').pack(fill="x", pady=10, ipadx=50, ipady=10)
-        ttk.Button(buttons_frame, text="Gráficos", command=self._go_to_metrics_chart, style='MainMenu.TButton').pack(fill="x", pady=10, ipadx=50, ipady=10)
+        s.configure('TFrame', background=self.background_color)
 
+
+        s.configure('Modern.TButton',
+                    font=('Segoe UI', 16, 'bold'),
+                    padding=15,
+                    background=self.primary_color,
+                    foreground=self.text_color_light,
+                    relief='flat',
+                    borderwidth=0,
+                    focusthickness=0,
+                    focuscolor=self.primary_color
+                   )
+
+        s.map('Modern.TButton',
+              background=[('active', self.secondary_color)],
+              foreground=[('active', self.text_color_dark)],
+              relief=[('pressed', 'flat')]
+             )
+
+
+        s.configure('Title.TLabel',
+                    font=('Segoe UI', 24, 'bold'),
+                    foreground=self.text_color_dark,
+                    background=self.background_color
+                   )
+
+
+        buttons_frame = ttk.Frame(self, padding="40 40 40 40")
+
+        buttons_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+
+
+        ttk.Label(buttons_frame, text="¡Bienvenido! Elige una opción:", style='Title.TLabel').pack(pady=30)
+
+        ttk.Button(buttons_frame, text="Codificación Shannon-Fano", command=self._go_to_shannon_fano, style='Modern.TButton').pack(fill="x", pady=12, ipadx=60, ipady=12)
+        ttk.Button(buttons_frame, text="Codificación Huffman", command=self._go_to_huffman, style='Modern.TButton').pack(fill="x", pady=12, ipadx=60, ipady=12)
+        ttk.Button(buttons_frame, text="Ver Resultados", command=self._go_to_results, style='Modern.TButton').pack(fill="x", pady=12, ipadx=60, ipady=12)
+        ttk.Button(buttons_frame, text="Mostrar Gráficos", command=self._go_to_metrics_chart, style='Modern.TButton').pack(fill="x", pady=12, ipadx=60, ipady=12)
 
 
 

@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import ttk, filedialog
+from tkinter import ttk, filedialog, messagebox
 import os
 
 class ResultsScreen(tk.Frame):
@@ -8,70 +8,160 @@ class ResultsScreen(tk.Frame):
         self.view = view
         self.controller = None
 
-        self.configure(bg="#FFFDE7") # Fondo amarillo claro
 
-        # controles
-        control_frame = ttk.Frame(self, padding=10)
-        control_frame.pack(side="top", fill="x", padx=10, pady=5)
-        ttk.Button(control_frame, text="Guardar Resultados", command=self._save_results).pack(side="left", padx=10)
-        ttk.Button(control_frame, text="Volver al Menú", command=self._go_back).pack(side="right", padx=10)
+        self.primary_color = "#6c5ce7"
+        self.secondary_color = "#a29bfe"
+        self.accent_color = "#00b894"
+        self.background_color = "#f5f6fa"
+        self.text_color_dark = "#2d3436"
+        self.text_color_light = "#ffffff"
+        self.neutral_color = "#607d8b"
+        self.neutral_hover_color = "#78909c"
+
+        self.configure(bg=self.background_color)
+
+
+
+        s = ttk.Style()
+        try:
+            s.theme_use('clam')
+        except tk.TclError:
+            print("El tema 'clam' no está disponible. Usando el tema predeterminado.")
+            s.theme_use('default')
+
+        s.configure('TFrame', background=self.background_color)
+
+        s.configure('Action.TButton',
+                    font=('Segoe UI', 12, 'bold'),
+                    padding=10,
+                    background=self.primary_color,
+                    foreground=self.text_color_light,
+                    relief='flat',
+                    borderwidth=0,
+                    focusthickness=0,
+                    focuscolor=self.primary_color
+                   )
+        s.map('Action.TButton',
+              background=[('active', self.secondary_color)],
+              foreground=[('active', self.text_color_dark)],
+              relief=[('pressed', 'flat')]
+             )
+
+
+        s.configure('Neutral.TButton',
+                    font=('Segoe UI', 12, 'bold'),
+                    padding=10,
+                    background=self.neutral_color,
+                    foreground=self.text_color_light,
+                    relief='flat',
+                    borderwidth=0,
+                    focusthickness=0,
+                    focuscolor=self.neutral_color
+                   )
+        s.map('Neutral.TButton',
+              background=[('active', self.neutral_hover_color)],
+              foreground=[('active', self.text_color_light)],
+              relief=[('pressed', 'flat')]
+             )
+
+        s.configure('Result.TLabel',
+                    font=('Segoe UI', 11, 'bold'),
+                    foreground=self.text_color_dark,
+                    background=self.background_color
+                   )
+
+        s.configure('Metrics.TLabel',
+                    font=('Segoe UI', 13, 'bold'),
+                    foreground=self.text_color_dark,
+                    background=self.background_color
+                   )
+        s.configure('MetricsValue.TLabel',
+                    font=('Segoe UI', 11),
+                    foreground=self.text_color_dark,
+                    background=self.background_color
+                   )
 
 
 
 
 
-        # PanedWindow para organizar ------------------------------------------------------------------------------------------------------
-        self.paned_window = ttk.PanedWindow(self, orient=tk.VERTICAL)
-        self.paned_window.pack(fill="both", expand=True, padx=10, pady=5)
 
-        # Panel Superior: Texto Original, Codificado, Decodificado
-        top_panel = ttk.Frame(self.paned_window, padding=5)
+        # controles -----------------
+        control_frame = ttk.Frame(self, padding="10 10 10 10", style='TFrame')
+        control_frame.pack(side="top", fill="x", padx=20, pady=10)
+        ttk.Button(control_frame, text="Guardar Resultados", command=self._save_results, style='Action.TButton').pack(side="left", padx=10)
+        ttk.Button(control_frame, text="Volver al Menú", command=self._go_back, style='Neutral.TButton').pack(side="right", padx=10)
+
+        # PanedWindow para organizar
+        self.paned_window = ttk.PanedWindow(self, orient=tk.VERTICAL, style='TFrame')
+        self.paned_window.pack(fill="both", expand=True, padx=20, pady=10)
+
+
+
+
+
+        # panel Superior: Texto Original, Codificado, Decodificado ----------------------------------------------------------
+        top_panel = ttk.Frame(self.paned_window, padding="15 15 15 15", style='TFrame')
         self.paned_window.add(top_panel, weight=1)
 
-        ttk.Label(top_panel, text="Texto Original:").pack(anchor="w", pady=2)
-        self.original_text_display = tk.Text(top_panel, wrap="word", height=5, font=('Consolas', 10))
-        self.original_text_display.pack(fill="x", pady=2)
+        ttk.Label(top_panel, text="Texto Original:", style='Result.TLabel').pack(anchor="w", pady=(5, 2))
+
+        self.original_text_display = tk.Text(top_panel, wrap="word", height=5,
+                                             font=('Consolas', 10), background='#ffffff', foreground=self.text_color_dark,
+                                             relief='flat', borderwidth=1, highlightbackground='#cccccc', highlightcolor='#cccccc')
+        self.original_text_display.pack(fill="x", pady=2, padx=5)
         self.original_text_display.config(state="disabled")
 
-        ttk.Label(top_panel, text="Algoritmo Utilizado:").pack(anchor="w", pady=2)
-        self.algo_used_label = ttk.Label(top_panel, text="N/A", font=('Inter', 10, 'bold'))
+        ttk.Label(top_panel, text="Algoritmo Utilizado:", style='Result.TLabel').pack(anchor="w", pady=(5, 2))
+        self.algo_used_label = ttk.Label(top_panel, text="N/A", style='MetricsValue.TLabel')
         self.algo_used_label.pack(anchor="w", padx=5, pady=2)
 
-        ttk.Label(top_panel, text="Texto Codificado (Bits):").pack(anchor="w", pady=2)
-        self.encoded_text_display = tk.Text(top_panel, wrap="word", height=5, font=('Consolas', 10))
-        self.encoded_text_display.pack(fill="x", pady=2)
+        ttk.Label(top_panel, text="Texto Codificado (Bits):", style='Result.TLabel').pack(anchor="w", pady=(5, 2))
+
+
+        self.encoded_text_display = tk.Text(top_panel, wrap="word", height=5,
+                                            font=('Consolas', 10), background='#ffffff', foreground=self.text_color_dark,
+                                            relief='flat', borderwidth=1, highlightbackground='#cccccc', highlightcolor='#cccccc')
+        self.encoded_text_display.pack(fill="x", pady=2, padx=5)
         self.encoded_text_display.config(state="disabled")
 
-        ttk.Label(top_panel, text="Texto Decodificado:").pack(anchor="w", pady=2)
-        self.decoded_text_display = tk.Text(top_panel, wrap="word", height=5, font=('Consolas', 10))
-        self.decoded_text_display.pack(fill="x", pady=2)
+        ttk.Label(top_panel, text="Texto Decodificado:", style='Result.TLabel').pack(anchor="w", pady=(5, 2))
+
+
+        self.decoded_text_display = tk.Text(top_panel, wrap="word", height=5,
+                                            font=('Consolas', 10), background='#ffffff', foreground=self.text_color_dark,
+                                            relief='flat', borderwidth=1, highlightbackground='#cccccc', highlightcolor='#cccccc')
+        self.decoded_text_display.pack(fill="x", pady=2, padx=5)
         self.decoded_text_display.config(state="disabled")
 
 
 
 
-        # Panel Inferior: Frecuencias, Códigos, Métricas
-        bottom_panel = ttk.Frame(self.paned_window, padding=5)
+        # panel Inferior: Frecuencias, Códigos, Métricas ------------------------------------------------------
+        bottom_panel = ttk.Frame(self.paned_window, padding="15 15 15 15", style='TFrame')
         self.paned_window.add(bottom_panel, weight=1)
 
-        ttk.Label(bottom_panel, text="Frecuencias de Símbolos:").pack(anchor="w", pady=2)
-        self.freq_text_display = tk.Text(bottom_panel, wrap="word", height=6, font=('Consolas', 9))
-        self.freq_text_display.pack(fill="x", pady=2)
+        ttk.Label(bottom_panel, text="Frecuencias de Símbolos:", style='Result.TLabel').pack(anchor="w", pady=(5, 2))
+
+
+        self.freq_text_display = tk.Text(bottom_panel, wrap="word", height=6,
+                                         font=('Consolas', 9), background='#ffffff', foreground=self.text_color_dark,
+                                         relief='flat', borderwidth=1, highlightbackground='#cccccc', highlightcolor='#cccccc')
+        self.freq_text_display.pack(fill="x", pady=2, padx=5)
         self.freq_text_display.config(state="disabled")
 
-        ttk.Label(bottom_panel, text="Tabla de Códigos:").pack(anchor="w", pady=2)
-        self.codes_text_display = tk.Text(bottom_panel, wrap="word", height=8, font=('Consolas', 9))
-        self.codes_text_display.pack(fill="x", pady=2)
+        ttk.Label(bottom_panel, text="Tabla de Códigos:", style='Result.TLabel').pack(anchor="w", pady=(5, 2))
+
+        self.codes_text_display = tk.Text(bottom_panel, wrap="word", height=8,
+                                          font=('Consolas', 9), background='#ffffff', foreground=self.text_color_dark,
+                                          relief='flat', borderwidth=1, highlightbackground='#cccccc', highlightcolor='#cccccc')
+        self.codes_text_display.pack(fill="x", pady=2, padx=5)
         self.codes_text_display.config(state="disabled")
 
-        ttk.Label(bottom_panel, text="Métricas de Compresión:", font=('Inter', 12, 'bold')).pack(anchor="w", pady=5)
-        self.avg_len_label = ttk.Label(bottom_panel, text="Longitud Promedio: N/A", font=('Inter', 10))
-        self.avg_len_label.pack(anchor="w", padx=10)
-        self.compression_rate_label = ttk.Label(bottom_panel, text="Tasa de Compresión: N/A", font=('Inter', 10))
+        ttk.Label(bottom_panel, text="Métricas de Compresión:", style='Metrics.TLabel').pack(anchor="w", pady=(10, 5))
+        self.avg_len_label = ttk.Label(bottom_panel, text="Longitud Promedio: N/A", style='MetricsValue.TLabel')
+        self.compression_rate_label = ttk.Label(bottom_panel, text="Tasa de Compresión: N/A", style='MetricsValue.TLabel')
         self.compression_rate_label.pack(anchor="w", padx=10)
-
-
-
 
     def set_controller(self, controller):
         self.controller = controller
@@ -90,10 +180,6 @@ class ResultsScreen(tk.Frame):
         widget.insert("1.0", content)
         widget.config(state="disabled")
 
-
-
-
-
     def display_results(self, original_text, algorithm_used, encoded_text, decoded_text, frequencies, codes, avg_len, compression_rate):
         self.update_text_widget(self.original_text_display, original_text)
         self.algo_used_label.config(text=algorithm_used)
@@ -106,8 +192,12 @@ class ResultsScreen(tk.Frame):
         codes_str = "\n".join([f"'{char}': {code}" for char, code in codes.items()])
         self.update_text_widget(self.codes_text_display, codes_str)
 
-        self.avg_len_label.config(text=f"Longitud Promedio: {avg_len:.2f} bits/símbolo")
-        self.compression_rate_label.config(text=f"Tasa de Compresión: {compression_rate:.2f}%")
+
+        avg_len_text = f"Longitud Promedio: {avg_len:.2f} bits/símbolo" if avg_len is not None else "Longitud Promedio: N/A"
+        compression_rate_text = f"Tasa de Compresión: {compression_rate:.2f}%" if compression_rate is not None else "Tasa de Compresión: N/A"
+
+        self.avg_len_label.config(text=avg_len_text)
+        self.compression_rate_label.config(text=compression_rate_text)
 
     def clear_results(self):
         self.update_text_widget(self.original_text_display, "")
@@ -119,15 +209,7 @@ class ResultsScreen(tk.Frame):
         self.avg_len_label.config(text="Longitud Promedio: N/A")
         self.compression_rate_label.config(text="Tasa de Compresión: N/A")
 
-
-
-
-
-
-
-
     def on_show(self):
-
         if self.controller:
             self.display_results(
                 self.controller.get_original_text(),

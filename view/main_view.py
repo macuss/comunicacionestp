@@ -1,7 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
 
-# Importar las nuevas clases de pantalla
 from view.screens.welcome_screen import WelcomeScreen
 from view.screens.main_menu_screen import MainMenuScreen
 from view.screens.huffman_screen import HuffmanScreen
@@ -13,8 +12,15 @@ class MainView:
     def __init__(self, master):
         self.master = master
         master.title("Compresor Huffman y Shannon-Fano")
-        master.geometry("1000x800")
+        master.geometry("1500x1100")
         master.resizable(True, True)
+
+        self.master.update_idletasks()
+        width = self.master.winfo_width()
+        height = self.master.winfo_height()
+        x = (self.master.winfo_screenwidth() // 2) - (width // 2)
+        y = (self.master.winfo_screenheight() // 2) - (height // 2)
+        self.master.geometry(f'{width}x{height}+{x}+{y}')
 
         self.controller = None
 
@@ -33,7 +39,6 @@ class MainView:
 
     def set_controller(self, controller):
         self.controller = controller
-        # Pasa el controlador a cada pantalla para que puedan interactuar
         for screen_name, screen_instance in self.screens.items():
             screen_instance.set_controller(controller)
 
@@ -64,7 +69,7 @@ class MainView:
             screen = self.screens[name]
             screen.grid(row=0, column=0, sticky="nsew")
             self.current_screen = screen
-            screen.tkraise() #
+            screen.tkraise()
 
 
             if self.controller:

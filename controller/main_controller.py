@@ -19,7 +19,7 @@ class MainController:
         self.shannon_fano_model = shannon_fano_model
         self.utils_model = utils_model
 
-        # variables de estado del controlador
+        # variables de estado del controlador -----------------------------
         self._original_text = ""
         self._last_algorithm_used = "N/A"
         self._encoded_bits = ""
@@ -47,7 +47,7 @@ class MainController:
 
 
 
-    # --- Métodos para cambiar de pantalla ---
+    #metodos para cambiar de pantalla ----------------------------------------
     def show_main_menu(self):
         self.view.show_screen("main_menu")
 
@@ -104,6 +104,8 @@ class MainController:
 
     def get_shannon_fano_metrics(self):
         return self._shannon_fano_metrics
+
+
 
     # lógica de Compresión/Descompresión ------------------------------------------
     def compress_text(self, algorithm_name):
