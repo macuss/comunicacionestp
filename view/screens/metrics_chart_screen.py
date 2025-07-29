@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 import matplotlib.pyplot as plt
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg # pip install matplotlib...
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 class MetricsChartScreen(tk.Frame):
     def __init__(self, parent, view):
