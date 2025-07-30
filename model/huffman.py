@@ -10,7 +10,6 @@ class HuffmanNode:
         self.left = left
         self.right = right
 
-    # Permite comparar nodos en el heapq basado en la frecuencia
     def __lt__(self, other):
         return self.freq < other.freq
 

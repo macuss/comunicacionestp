@@ -207,6 +207,11 @@ class MainController:
         except Exception as e:
             self.view.show_message("Error de Descompresión", f"Ocurrió un error al decodificar: {e}", type="error")
 
+
+
+
+
+
     def save_results(self):
 
         if not self._original_text or not self._encoded_bits or not self._codes:
